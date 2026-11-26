@@ -37,7 +37,8 @@
         "serve": {
           "builder": "@angular/build:dev-server",
           "options": {
-            "buildTarget": "edu-manager:build:development"
+            "buildTarget": "edu-manager:build:development",
+            "proxyConfig": "proxy.conf.json"
           }
         }
       }

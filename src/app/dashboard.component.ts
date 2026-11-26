@@ -1,21 +1,24 @@
+import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
+import { catchError, of, startWith } from 'rxjs';
 import { CatalogService } from './catalog.service';
 import { SessionService } from './session.service';
 
 @Component({
-  imports: [RouterLink],
+  imports: [AsyncPipe],
   template: `<h2>Tableau de bord</h2>
-    <section class="grid">
-      <p class="card">{{ catalog.students.length }} étudiants</p>
-      <p class="card">{{ catalog.formations.length }} formations</p>
-    </section>
-    <button type="button" (click)="session.admin.set(!session.admin())">
-      {{ session.admin() ? 'Quitter' : 'Activer' }} le mode administrateur de démonstration
-    </button>
-    @if (session.admin()) { <p><a routerLink="/admin">Ouvrir l’administration</a></p> }`,
+    <p class="card">Étudiants : {{ studentCount$ | async }}</p>
+    <button type="button" (click)="logout()">Fermer la session de démonstration</button>`,
 })
 export class DashboardComponent {
-  readonly catalog = inject(CatalogService);
-  readonly session = inject(SessionService);
+  private readonly router = inject(Router);
+  private readonly session = inject(SessionService);
+  readonly studentCount$ = inject(CatalogService).studentCount().pipe(
+    catchError(() => of('API indisponible')), startWith('chargement…'));
+
+  logout(): void {
+    this.session.isAuthenticated.set(false);
+    void this.router.navigate(['/login']);
+  }
 }

@@ -16,6 +16,5 @@ export class AppComponent {
     { path: '/', label: 'Tableau de bord' },
     { path: '/students', label: 'Étudiants' },
     { path: '/formations', label: 'Formations' },
-    { path: '/admin', label: 'Administration' },
   ];
 }
